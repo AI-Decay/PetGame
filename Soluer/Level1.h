@@ -5,14 +5,17 @@
 #include "GameController.h"
 #include "Ball.h"
 #include "Enemy.h"
+#include "Hero.h"
 #include <vector>
+
 
 class Level1 : public GameLevel
 {
 	float y = 0.0f;
 	float ySpeed = 0.0f;
-	std::unique_ptr <SpriteSheet> sprites;
+	int timeJump = 0;
 	std::unique_ptr<Enemy> enemy;
+	std::unique_ptr<Hero> hero;
 	std::vector<Ball> VectorBall;
 	int frame;
 	std::vector<Platform> VectorPlatform;

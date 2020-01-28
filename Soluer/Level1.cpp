@@ -3,12 +3,10 @@
 void Level1::Load()
 {
 	frame = 0;
-	xPosition = 0.0f;
-	yPosition = 200.0f;
-	sprites = std::unique_ptr<SpriteSheet>(new SpriteSheet(L"lopata.png", gfx, 120, 150));
-	//spritesEnemy = new SpriteSheet(L"sticker.png", gfx, 200, 300);
 	enemy = std::unique_ptr<Enemy>(new Enemy(std::unique_ptr<SpriteSheet>(new SpriteSheet(L"sticker.png", gfx, 200, 300)),
 	50.f, 60.0f, 3.0f, 40, 10));
+	hero = std::unique_ptr<Hero>(new Hero(std::unique_ptr<SpriteSheet>(new SpriteSheet(L"lopata.png", gfx, 120, 150)), 
+		0.0f, 200.0f, 10, 100, 5));
 	time = std::unique_ptr<GameTime>(new GameTime());
 	VectorPlatform.push_back(Platform( 50.0f, 500.0f, 180.0f, 520.0f, false, 0.5f, 0.5f, 0.5f, 1.0f));
 	VectorPlatform.push_back(Platform(250.0f, 400.0f, 380.0f, 420.0f, false, 0.5f, 0.5f, 0.5f, 1.0f));
@@ -28,7 +26,7 @@ void Level1::Render()
 	{
 		gfx->DrawRectangle(x.x1, x.y1, x.x2, x.y2, x.r, x.g, x.b, x.a);
 	}
-	sprites->Draw(frame, xPosition, yPosition);
+	hero->sprites->Draw(frame, hero->xPosition, hero->yPosition);
 	if(enemy->loadEnemy)
 	enemy->sprites->Draw(enemy->frame, enemy->xPosition, enemy->yPosition);
 	for (auto ball : VectorBall)
@@ -40,10 +38,17 @@ void Level1::Render()
 
 void Level1::Update()
 {
+	onPlatform = false;
+
 	if (jump)
+	{
 		Jump();
+	}
 	else
-	yPosition += 2.5f;
+	{
+		hero->yPosition += 0.5f * timeJump;
+		timeJump++;
+	}
 
 	if (enemy->hp == 20)
  		enemy->frame = 1;
@@ -81,9 +86,11 @@ void Level1::Update()
 
 	for (auto x : VectorPlatform)
 	{
-		if (yPosition > x.y1 - 130 && xPosition >= x.x1 - 80 && xPosition <= x.x2 - 45)
+		if (hero->yPosition > x.y1 - 135 && hero->xPosition >= x.x1 - 80 && hero->xPosition <= x.x2 - 45)
 		{
-			yPosition = x.y1 - 130;
+			onPlatform = true;
+			timeJump = 0;
+			hero->yPosition = x.y1 - 130;
 			if(VectorPlatform[3].x1 == x.x1 && enemy->alive)
 			{ 
 				enemy->loadEnemy = true;
@@ -92,21 +99,21 @@ void Level1::Update()
 		
 	}
 
-	if (xPosition > 700) xPosition = 700.0f;
-	if (xPosition < -20) xPosition = -20.0f;
+	if (hero->xPosition > 700) hero->xPosition = 700.0f;
+	if (hero->xPosition < -20) hero->xPosition = -20.0f;
 }
 
 void Level1::Move(float x, float y)
 {
 	if (x > 0)
 	{
-		xPosition += x;
+		hero->xPosition += x;
 		if (frame != 1)
 			frame = 1;
 	}
 	else
 	{
-		xPosition += x;
+		hero->xPosition += x;
 		if (frame)
 			frame = 0;
 	}
@@ -114,13 +121,17 @@ void Level1::Move(float x, float y)
 
 void Level1::Jump()
 {
-	if (jumpHight != 0)
+	
+	if (jumpHight > 0)
 	{
-		yPosition -= 2.5f;
-		jumpHight -= 2.5;
+		timeJump++;
+		hero->yPosition -= 40.0f / timeJump + 1;
+		jumpHight -= 40.0f / timeJump + 1;
+		
 	}
 	else
 	{
+		timeJump = 0;
 		jumpHight = 150.0f;
 		jump = false;
 	}
@@ -128,28 +139,13 @@ void Level1::Jump()
 
 void Level1::Shot()
 {
-	/*if (VectorBall.empty())
-	{
-		if (frame)
-			VectorBall.push_back(Ball{ xPosition + 85, yPosition + 40, 5, true, true });
-		else
-			VectorBall.push_back(Ball{ xPosition + 40, yPosition + 40, 5, true, false });
-	}
-	else
-	{
-		if ((VectorBall.back().x - xPosition > -100) && frame)
-			VectorBall.push_back(Ball{ xPosition + 40, yPosition + 40, 5, true, false });
-		else if ((xPosition - VectorBall.back().x > -55) && !frame)
-			VectorBall.push_back(Ball{ xPosition + 85, yPosition + 40, 5, true, true });
-	}*/
-
-
+	
  	if(time->Duration() > 0)
 	{
 		if (frame)
-			VectorBall.push_back(Ball{ xPosition + 85, yPosition + 40, 5, true, true });
+			VectorBall.push_back(Ball{ hero->xPosition + 85, hero->yPosition + 40, 5, true, true });
 		else
-			VectorBall.push_back(Ball{ xPosition + 40, yPosition + 40, 5, true, false });
+			VectorBall.push_back(Ball{ hero->xPosition + 40, hero->yPosition + 40, 5, true, false });
 
 		time->ResetTime();
 	}
