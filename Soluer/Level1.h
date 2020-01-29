@@ -17,7 +17,7 @@ class Level1 : public GameLevel
 	std::unique_ptr<Enemy> enemy;
 	std::unique_ptr<Hero> hero;
 	std::vector<Ball> VectorBall;
-	int frame;
+	int frame = 0;
 	std::vector<Platform> VectorPlatform;
 public:
 	void Load() override;

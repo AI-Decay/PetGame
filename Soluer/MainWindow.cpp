@@ -8,6 +8,7 @@
 int MainWindowWidth = 800;
 int MainWondowHeight = 600;
 
+static int ssseblan = 0;
 
 std::shared_ptr<Graphics> graphics{ new Graphics() };
 
@@ -27,14 +28,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			switch (wParam)
 			{
-			case VK_LEFT:
+			/*case VK_LEFT:
 			{
-				GameController::Move(-5.0f, 0.0f);
+				GameController::Move(-7.0f, 0.0f);
 			}
 			break;
 			case VK_RIGHT:
 			{
-				GameController::Move(5.0f, 0.0f);
+				GameController::Move(7.0f, 0.0f);
 			}
 			break;
 			case VK_UP:
@@ -46,10 +47,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				GameController::Shot();
 			}
-			break;
+			break;*/
 			default:
 				break;
 			}
+			break;
+		}
+
+		case WM_KEYUP:
+		{
+
 			break;
 		}
 
@@ -107,6 +114,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int nCmdSh
 	msg.message = WM_NULL;
 
 
+
 	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -115,7 +123,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int nCmdSh
 		{
 			//Update
 			GameController::Update();
-
+			
 			//Render
 			graphics->BeginDraw();
 
@@ -123,7 +131,23 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int nCmdSh
 
 			graphics->EndDraw();
 		}
-
+		
+		if (GetAsyncKeyState(VK_LEFT))
+		{
+			GameController::Move(-5.0f, 0.0f);
+		}
+		if (GetAsyncKeyState(VK_RIGHT))
+		{
+			GameController::Move(5.0f, 0.0f);
+		}
+		if (GetAsyncKeyState(VK_UP))
+		{
+			GameController::Jump();
+		}
+		if(GetAsyncKeyState(VK_SPACE))
+		{
+			GameController::Shot();
+		}
 	}
 
 

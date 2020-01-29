@@ -1,5 +1,5 @@
 #include "Level1.h"
-
+#include <array>
 void Level1::Load()
 {
 	frame = 0;
@@ -50,6 +50,7 @@ void Level1::Update()
 		timeJump++;
 	}
 
+
 	if (enemy->hp == 20)
  		enemy->frame = 1;
 	else if (enemy->hp == 5)
@@ -67,9 +68,9 @@ void Level1::Update()
 	for (int i = 0; i < VectorBall.size(); i++)
 	{
 		if (VectorBall[i].left)
-			VectorBall[i].x += 5.0f;
+			VectorBall[i].x += 10;
 		else
-			VectorBall[i].x -= 5.0f;
+			VectorBall[i].x -= 10;
 		if (enemy->loadEnemy && VectorBall[i].x == (enemy->xPosition - static_cast<int>(enemy->xPosition)%5 + 150) && 
 			(VectorBall[i].y > enemy->yPosition + 30 && VectorBall[i].y < enemy->yPosition + 270))
 		{
@@ -86,7 +87,7 @@ void Level1::Update()
 
 	for (auto x : VectorPlatform)
 	{
-		if (hero->yPosition > x.y1 - 135 && hero->xPosition >= x.x1 - 80 && hero->xPosition <= x.x2 - 45)
+		if (hero->yPosition > x.y1 - 135 && hero->xPosition >= x.x1 - 65 && hero->xPosition <= x.x2 - 65)
 		{
 			onPlatform = true;
 			timeJump = 0;
@@ -99,21 +100,22 @@ void Level1::Update()
 		
 	}
 
+
 	if (hero->xPosition > 700) hero->xPosition = 700.0f;
 	if (hero->xPosition < -20) hero->xPosition = -20.0f;
 }
 
 void Level1::Move(float x, float y)
 {
+	hero->xPosition += x;
+
 	if (x > 0)
 	{
-		hero->xPosition += x;
 		if (frame != 1)
 			frame = 1;
 	}
 	else
 	{
-		hero->xPosition += x;
 		if (frame)
 			frame = 0;
 	}
@@ -127,19 +129,18 @@ void Level1::Jump()
 		timeJump++;
 		hero->yPosition -= 40.0f / timeJump + 1;
 		jumpHight -= 40.0f / timeJump + 1;
-		
 	}
 	else
 	{
 		timeJump = 0;
-		jumpHight = 150.0f;
+		JumpHeightDefault();
 		jump = false;
 	}
 }
 
 void Level1::Shot()
 {
-	
+
  	if(time->Duration() > 0)
 	{
 		if (frame)
